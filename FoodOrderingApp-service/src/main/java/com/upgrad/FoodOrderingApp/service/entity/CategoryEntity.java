@@ -1,49 +1,45 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.apache.commons.lang3.builder.*;
+
 import javax.persistence.*;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
 @Table(name = "category")
-@NamedQueries(
-        {
-                @NamedQuery(name = "categoryByUuid", query = "select c from CategoryEntity c where c.uuid=:uuid"),
-                @NamedQuery(name = "categoryById", query = "select c from CategoryEntity c where c.id=:id"),
-                @NamedQuery(name = "allCategories", query = "select c from CategoryEntity c order by c.categoryName")
-        }
-)
-
-public class CategoryEntity implements Serializable {
-
+@NamedQueries({
+        @NamedQuery(name = "getAllCategories", query = "SELECT c FROM CategoryEntity c order by c.categoryName"),
+        @NamedQuery(name = "getCategoryItem", query = "SELECT c FROM CategoryEntity c WHERE c.uuid=:categoryId")
+})
+public class CategoryEntity implements Serializable, Comparable<CategoryEntity> {
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Column(name = "id")
+    @GeneratedValue(generator = "categoryIdGenerator")
+    @SequenceGenerator(name = "categoryIdGenerator", sequenceName = "category_id_seq", initialValue = 1, allocationSize = 1)
+    @ToStringExclude
+    @HashCodeExclude
+    private Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "uuid")
+    @NotNull
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "CATEGORY_NAME")
+    @Column(name = "category_name")
+    @Size(max = 30)
     private String categoryName;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "category_item",
-            joinColumns = @JoinColumn(name = "category_id", referencedColumnName="id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "item_id", referencedColumnName="id", nullable = false)
-    )
-    private List<ItemEntity> itemEntities =new ArrayList<>();
+    @ManyToMany(mappedBy = "categories", fetch = FetchType.EAGER)
+    private List<ItemEntity> items;
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -63,12 +59,31 @@ public class CategoryEntity implements Serializable {
         this.categoryName = categoryName;
     }
 
-    public List<ItemEntity> getItemEntities() {
-        return itemEntities;
+    public List<ItemEntity> getItems() {
+        return items;
     }
 
-    public void setItemEntities(List<ItemEntity> itemEntities) {
-        this.itemEntities = itemEntities;
+    public void setItems(List<ItemEntity> items) {
+        this.items = items;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, Boolean.FALSE);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, Boolean.FALSE);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
+    @Override
+    public int compareTo(CategoryEntity categoryEntity) {
+        return 0;
+    }
 }

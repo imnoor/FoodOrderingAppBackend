@@ -1,50 +1,55 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
+import org.apache.commons.lang3.builder.*;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.UUID;
 
 @Entity
 @Table(name = "coupon")
-@NamedQueries(
-        {
-                @NamedQuery(name = "couponByUuid", query = "select c from CouponEntity c where c.uuid=:uuid"),
-                @NamedQuery(name = "couponById", query = "select c from CouponEntity c where c.id=:id"),
-                @NamedQuery(name = "couponByName", query = "select c from CouponEntity c where c.couponName=:couponName")
-        }
-)
-
+@NamedQueries({
+        @NamedQuery(name = "getCouponByName", query = "SELECT c FROM CouponEntity c WHERE c.couponName = :couponName"),
+        @NamedQuery(name = "getCouponByUuid", query = "SELECT c FROM CouponEntity c WHERE c.uuid = :uuid")
+})
 public class CouponEntity implements Serializable {
-
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Column(name = "id")
+    @GeneratedValue(generator = "couponIdGenerator")
+    @SequenceGenerator(name = "couponIdGenerator", sequenceName = "coupon_id_seq", initialValue = 1, allocationSize = 1)
+    @ToStringExclude
+    @HashCodeExclude
+    private Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "uuid")
+    @NotNull
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "COUPON_NAME")
+    @Column(name = "coupon_name")
+    @Size(max = 255)
     private String couponName;
 
-    @Column(name="PERCENT")
+    @Column(name = "percent")
     @NotNull
     private Integer percent;
 
-    public CouponEntity(String couponId, String myCoupon, int id) {
-        this.uuid=couponId;
-        this.couponName= myCoupon;
-        this.id=id;
+    public CouponEntity() {
+
     }
 
-    public long getId() {
+    public CouponEntity(final String uuid, final String couponName, Integer percent) {
+        this.uuid = uuid;
+        this.couponName = couponName;
+        this.percent = percent;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -71,4 +76,20 @@ public class CouponEntity implements Serializable {
     public void setPercent(Integer percent) {
         this.percent = percent;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, Boolean.FALSE);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, Boolean.FALSE);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
 }

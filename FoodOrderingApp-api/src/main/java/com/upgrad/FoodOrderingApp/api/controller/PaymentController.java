@@ -13,36 +13,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@RestController
 @CrossOrigin
-@RequestMapping("/")
+@RestController
+@RequestMapping("/payment")
 public class PaymentController {
 
     @Autowired
-    private PaymentService paymentService;
+    PaymentService paymentService;
 
-    @RequestMapping(method = RequestMethod.GET, path = "/payment", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<PaymentListResponse> getPaymentMethods() {
+    @CrossOrigin
+    @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PaymentListResponse> getPaymentModes() {
 
-        List<PaymentEntity> paymentEntityList = new ArrayList<>();
-        paymentEntityList.addAll(paymentService.getPaymentMethods());
-        PaymentListResponse paymentListResponse = new PaymentListResponse();
+        List<PaymentEntity> paymentEntities = paymentService.getAllPaymentMethods();
 
-        for (PaymentEntity paymentEntity : paymentEntityList) {
+        PaymentListResponse response = new PaymentListResponse();
+        paymentEntities.forEach(paymentEntity -> response.addPaymentMethodsItem(new PaymentResponse().id(UUID.fromString(paymentEntity.getUuid())).paymentName(paymentEntity.getPaymentName())));
 
-            PaymentResponse paymentResponse = new PaymentResponse();
-
-            paymentResponse.setId(UUID.fromString(paymentEntity.getUuid()));
-            paymentResponse.setPaymentName(paymentEntity.getPaymentName());
-            paymentListResponse.addPaymentMethodsItem(paymentResponse);
-
+        if (response.getPaymentMethods().isEmpty()) {
+            return new ResponseEntity<PaymentListResponse>(response, HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<PaymentListResponse>(response, HttpStatus.OK);
         }
-
-        return new ResponseEntity<PaymentListResponse>(paymentListResponse, HttpStatus.OK);
-
     }
 }

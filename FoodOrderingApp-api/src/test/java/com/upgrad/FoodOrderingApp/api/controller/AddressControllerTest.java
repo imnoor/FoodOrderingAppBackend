@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -433,4 +434,5 @@ public class AddressControllerTest {
         final StatesListResponse statesLists = new ObjectMapper().readValue(response, StatesListResponse.class);
         assertNull(statesLists.getStates());
     }
+
 }

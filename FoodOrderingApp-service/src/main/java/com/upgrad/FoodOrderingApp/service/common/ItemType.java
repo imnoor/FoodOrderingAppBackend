@@ -1,14 +1,21 @@
 package com.upgrad.FoodOrderingApp.service.common;
 
 public enum ItemType {
-    NON_VEG("NON VEG","Basically Non Veg");
+    VEG("VEG"),
+    NON_VEG("NON_VEG");
 
-    private final String code;
+    private String value;
 
-    private final String desc;
+    private ItemType(String value) {
+        this.value = value;
+    }
 
-    private ItemType(final String code, final String desc) {
-        this.code = code;
-        this.desc = desc;
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return getValue();
     }
 }

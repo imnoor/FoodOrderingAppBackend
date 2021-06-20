@@ -4,6 +4,7 @@ import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
 import com.upgrad.FoodOrderingApp.service.businness.StateService;
+import com.upgrad.FoodOrderingApp.service.common.FoodOrderingConstants;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
@@ -34,16 +35,16 @@ public class AddressController {
     private StateService stateService;
 
     @RequestMapping(method = RequestMethod.POST, path = "/address", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<SaveAddressResponse> saveAddress(@RequestHeader("authorization") final String authorization,@RequestBody (required = false) final SaveAddressRequest saveAddressRequest) throws AuthorizationFailedException, SaveAddressException, AddressNotFoundException {
-        String [] authEncoded = authorization.split("Bearer ");
+    public ResponseEntity<SaveAddressResponse> saveAddress(@RequestHeader("authorization") final String authorization, @RequestBody(required = false) final SaveAddressRequest saveAddressRequest) throws AuthorizationFailedException, SaveAddressException, AddressNotFoundException {
+        String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
         if (authEncoded.length > 1) {
             authToken = authEncoded[1];
         } else {
-            authToken="nonexistant";
+            authToken = "nonexistant";
         }
-        CustomerEntity customerEntity= customerService.getCustomerByAuthToken(authToken);
-        StateEntity stateEntity= addressService.getStateByUUID(saveAddressRequest.getStateUuid());
+        CustomerEntity customerEntity = customerService.getCustomerByAuthToken(authToken);
+        StateEntity stateEntity = addressService.getStateByUUID(saveAddressRequest.getStateUuid());
         //Lets do some validations one day ... eventually
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setFlatBuilNo(saveAddressRequest.getFlatBuildingName());
@@ -51,24 +52,26 @@ public class AddressController {
         addressEntity.setCity(saveAddressRequest.getCity());
         addressEntity.setPincode(saveAddressRequest.getPincode());
         addressEntity.setState(stateEntity);
-        addressEntity = addressService.saveAddress(addressEntity,customerEntity);
+        addressEntity = addressService.saveAddress(addressEntity, customerEntity);
         SaveAddressResponse saveAddressResponse = new SaveAddressResponse().id(addressEntity.getUuid()).status("ADDRESS SUCCESSFULLY REGISTERED");
         return new ResponseEntity<>(saveAddressResponse, HttpStatus.CREATED);
     }
+
     @RequestMapping(method = RequestMethod.GET, path = "/address/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AddressListResponse> getAllSavedAddresses(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
-        String [] authEncoded = authorization.split("Bearer ");
+        String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
         if (authEncoded.length > 1) {
             authToken = authEncoded[1];
         } else {
-            authToken="nonexistant";
+
+            authToken = "nonexistant";
         }
-        CustomerEntity customerEntity= customerService.getCustomerByAuthToken(authToken);
+        CustomerEntity customerEntity = customerService.getCustomerByAuthToken(authToken);
         customerService.validateAccessToken(authToken);
         List<AddressEntity> addressEntities = addressService.getAllAddress(customerEntity);
         List<AddressList> addressList = new ArrayList<>();
-        for (AddressEntity addressEntity :addressEntities) {
+        for (AddressEntity addressEntity : addressEntities) {
             AddressList addTmp = new AddressList();
             addTmp.setId(UUID.fromString(addressEntity.getUuid()));
             addTmp.setFlatBuildingName(addressEntity.getFlatBuilNo());
@@ -87,20 +90,21 @@ public class AddressController {
 
     @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(@PathVariable("address_id") String addressUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, AddressNotFoundException {
-        String [] authEncoded = authorization.split("Bearer ");
+        String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
         if (authEncoded.length > 1) {
             authToken = authEncoded[1];
         } else {
-            authToken="nonexistant";
+            authToken = "nonexistant";
         }
-        CustomerEntity customerEntity= customerService.getCustomerByAuthToken(authToken);
+        CustomerEntity customerEntity = customerService.getCustomerByAuthToken(authToken);
 
-        AddressEntity addressEntity= addressService.getAddressByUUID(addressUuid,customerEntity);
+        AddressEntity addressEntity = addressService.getAddressByUUID(addressUuid, customerEntity);
 
-        if(addressUuid.isEmpty()) {
-            throw new AddressNotFoundException("ANF-005","Address id can not be empty");
+        if (addressUuid.isEmpty()) {
+            throw new AddressNotFoundException("ANF-005", "Address id can not be empty");
         }
+
         UUID retUUID = UUID.fromString(addressService.deleteAddress(addressEntity).getUuid());
         DeleteAddressResponse deleteAddressResponse = new DeleteAddressResponse().id(retUUID).status("ADDRESS DELETED SUCCESSFULLY");
         return new ResponseEntity<DeleteAddressResponse>(deleteAddressResponse, HttpStatus.OK);

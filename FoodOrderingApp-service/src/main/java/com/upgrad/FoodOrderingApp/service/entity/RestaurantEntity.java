@@ -1,88 +1,85 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
-import javax.persistence.*;
-
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
+import org.apache.commons.lang3.builder.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "restaurant")
-@NamedQueries(
-        {
-                @NamedQuery(name = "allRestaurants", query = "select r from RestaurantEntity r order by r.customerRating desc"),
-                @NamedQuery(name = "findByName", query = "select r from RestaurantEntity  r where lower(r.restaurantName) like :restaurantName order by r.restaurantName"),
-                @NamedQuery(name = "findRestaurantByUUId",query = "select r from RestaurantEntity r where lower(r.uuid) = :restaurantUUID")
-        }
-)
-
-public class RestaurantEntity {
-
+@NamedQueries({
+        @NamedQuery(name = "getAllRestaurants", query = "SELECT r FROM RestaurantEntity r ORDER BY r.customerRating DESC"),
+        @NamedQuery(name = "getRestaurantsByName", query = "SELECT r FROM RestaurantEntity r WHERE LOWER(r.restaurantName) LIKE :name ORDER BY r.restaurantName"),
+        @NamedQuery(name = "getRestaurantById", query = "SELECT r FROM RestaurantEntity r WHERE r.uuid=:id")
+})
+public class RestaurantEntity implements Serializable {
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    @Column(name = "id")
+    @GeneratedValue(generator = "restaurantIdGenerator")
+    @SequenceGenerator(name = "restaurantIdGenerator", sequenceName = "restaurant_id_seq", initialValue = 1, allocationSize = 1)
+    @ToStringExclude
+    @HashCodeExclude
+    private Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "uuid")
     @NotNull
     @Size(max = 200)
     private String uuid;
 
-    @Column(name = "RESTAURANT_NAME")
+    @Column(name = "restaurant_name")
     @NotNull
     @Size(max = 50)
     private String restaurantName;
 
-    @Column(name = "PHOTO_URL")
-    @NotNull
+    @Column(name = "photo_url")
     @Size(max = 255)
     private String photoUrl;
 
-    @Column(name = "CUSTOMER_RATING")
+    @Column(name = "customer_rating")
     @NotNull
-    private BigDecimal customerRating;
+    private double customerRating;
 
-    @Column(name = "NUMBER_OF_CUSTOMERS_RATED")
+    @Column(name = "average_price_for_two")
     @NotNull
-    private Integer numCustomersRated;
+    private Integer averagePriceForTwo;
 
-    @Column(name = "AVERAGE_PRICE_FOR_TWO")
+    @Column(name = "number_of_customers_rated")
     @NotNull
-    private Integer avgPriceForTwo;
+    private Integer numberOfCustomersRated;
 
-    @ManyToOne
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "address_id", referencedColumnName = "id")
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "ADDRESS_ID")
+    @NotNull
+    @ToStringExclude
+    @HashCodeExclude
+    @EqualsExclude
     private AddressEntity address;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "restaurant_category",
-            joinColumns = @JoinColumn(name = "restaurant_id", referencedColumnName="id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName="id", nullable = false)
-    )
-    private Set<CategoryEntity> categoryEntities = new HashSet<>();
+    @OneToMany(mappedBy = "restaurantEntity", fetch = FetchType.EAGER)
+    @NotNull
+    @ToStringExclude
+    @HashCodeExclude
+    @EqualsExclude
+    Set<RestaurantCategoryEntity> restaurantCategoryEntitySet = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "restaurant_item",
-            joinColumns = @JoinColumn(name = "restaurant_id", referencedColumnName="id", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "item_id", referencedColumnName="id", nullable = false)
-    )
+            joinColumns = {@JoinColumn(name = "restaurant_id")},
+            inverseJoinColumns = {@JoinColumn(name = "item_id")})
+    private Set<ItemEntity> items = new HashSet<ItemEntity>();
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -110,28 +107,28 @@ public class RestaurantEntity {
         this.photoUrl = photoUrl;
     }
 
-    public BigDecimal getCustomerRating() {
+    public double getCustomerRating() {
         return customerRating;
     }
 
-    public void setCustomerRating(BigDecimal customerRating) {
+    public void setCustomerRating(double customerRating) {
         this.customerRating = customerRating;
     }
 
-    public Integer getNumCustomersRated() {
-        return numCustomersRated;
+    public Integer getAveragePriceForTwo() {
+        return averagePriceForTwo;
     }
 
-    public void setNumCustomersRated(Integer numCustomersRated) {
-        this.numCustomersRated = numCustomersRated;
+    public void setAvgPrice(Integer averagePriceForTwo) {
+        this.averagePriceForTwo = averagePriceForTwo;
     }
 
-    public Integer getAvgPriceForTwo() {
-        return avgPriceForTwo;
+    public Integer getNumberOfCustomersRated() {
+        return numberOfCustomersRated;
     }
 
-    public void setAvgPriceForTwo(Integer avgPriceForTwo) {
-        this.avgPriceForTwo = avgPriceForTwo;
+    public void setNumberCustomersRated(Integer numberOfCustomersRated) {
+        this.numberOfCustomersRated = numberOfCustomersRated;
     }
 
     public AddressEntity getAddress() {
@@ -142,21 +139,35 @@ public class RestaurantEntity {
         this.address = address;
     }
 
-    public Set<CategoryEntity> getCategoryEntities() {
-        return categoryEntities;
+    public Set<RestaurantCategoryEntity> getRestaurantCategoryEntitySet() {
+        return restaurantCategoryEntitySet;
     }
 
-    public void setCategoryEntities(Set<CategoryEntity> categoryEntities) {
-        this.categoryEntities = categoryEntities;
+    public void setRestaurantCategoryEntitySet(Set<RestaurantCategoryEntity> restaurantCategoryEntitySet) {
+        this.restaurantCategoryEntitySet = restaurantCategoryEntitySet;
+    }
+
+    public Set<ItemEntity> getItems() {
+        return items;
+    }
+
+    public void setItems(Set<ItemEntity> item) {
+        this.items = item;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, Boolean.FALSE);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(this).hashCode();
+        return HashCodeBuilder.reflectionHashCode(this, Boolean.FALSE);
     }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
     }
+
 }

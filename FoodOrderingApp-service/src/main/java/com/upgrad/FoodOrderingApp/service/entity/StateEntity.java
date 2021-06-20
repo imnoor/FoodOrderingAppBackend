@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
 import javax.persistence.*;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -16,9 +17,9 @@ import java.util.UUID;
 @Table(name = "state")
 @NamedQueries(
         {
-                @NamedQuery(name = "allStates", query = "select s from StateEntity s"),
-                @NamedQuery(name = "stateByUuid",query="select s from StateEntity s where s.uuid=:uuid"),
-                @NamedQuery(name = "stateById", query = "select s from StateEntity s where s.id=:id")
+                @NamedQuery(name = "allStates", query = "select o from StateEntity o"),
+                @NamedQuery(name = "stateByUuid", query = "select o from StateEntity o where o.uuid=:uuid"),
+                @NamedQuery(name = "stateById", query = "select o from StateEntity o where o.id=:id")
 
         }
 )
@@ -39,9 +40,10 @@ public class StateEntity implements Serializable {
     @Size(max = 30)
     private String stateName;
 
-    public StateEntity(){}
+    public StateEntity() {
+    }
 
-    public StateEntity(String uuid,String name){
+    public StateEntity(String uuid, String name) {
         this.setUuid(uuid);
         this.setStateName(name);
     }
@@ -86,5 +88,3 @@ public class StateEntity implements Serializable {
     }
 
 }
-
-

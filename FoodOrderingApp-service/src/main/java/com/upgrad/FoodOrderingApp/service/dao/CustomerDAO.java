@@ -9,12 +9,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 
 @Repository
-public class CustomerDAO {
+public class CustomerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
     public CustomerEntity createCustomer(CustomerEntity customerEntity) {
-         entityManager.persist(customerEntity);
+        entityManager.persist(customerEntity);
         return customerEntity;
     }
 

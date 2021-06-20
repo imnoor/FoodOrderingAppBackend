@@ -14,38 +14,34 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.0.8.RELEASE</version>
+            <version>5.2.8.RELEASE</version>
             <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.6</version>
+            <version>2.11.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.9.6</version>
+            <version>2.11.1</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.0.8.RELEASE</version>
+            <version>5.2.8.RELEASE</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>42.2.2</version>
+            <version>42.2.14</version>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
@@ -53,13 +49,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.0.1.RELEASE</version>
+        <version>2.3.2.RELEASE</version>
     </parent>
 
     <modules>
         <module>FoodOrderingApp-api</module>
         <module>FoodOrderingApp-db</module>
-       <module>FoodOrderingApp-service</module>
+        <module>FoodOrderingApp-service</module>
     </modules>
 
 

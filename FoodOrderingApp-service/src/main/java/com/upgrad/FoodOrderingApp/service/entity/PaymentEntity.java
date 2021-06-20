@@ -1,9 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.entity;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
+import org.apache.commons.lang3.builder.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -12,36 +9,42 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "payment")
-@NamedQueries(
-        {
-                @NamedQuery(name = "allPaymentMethods", query = "select p from PaymentEntity p "),
-                @NamedQuery(name = "paymentById", query = "select p from PaymentEntity p where p.id=:id"),
-                @NamedQuery(name = "paymentByUuid", query = "select p from PaymentEntity p where p.uuid=:uuid"),
-        }
-)
-
-
-public class PaymentEntity {
+@NamedQueries({
+        @NamedQuery(name = "getAllPaymentModes", query = "SELECT p FROM PaymentEntity p"),
+        @NamedQuery(name = "getPaymentModeById", query = "SELECT p FROM PaymentEntity p Where p.uuid=:uuid")
+})
+public class PaymentEntity implements Serializable {
     @Id
-    @Column(name = "ID")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    @GeneratedValue(generator = "paymentIdGenerator")
+    @SequenceGenerator(name = "paymentIdGenerator", sequenceName = "payment_id_seq", initialValue = 1, allocationSize = 1)
+    @ToStringExclude
+    @HashCodeExclude
+    private Integer id;
 
-    @Column(name = "UUID")
+    @Column(name = "uuid")
     @NotNull
     @Size(max = 200)
     private String uuid;
 
-    @Column(name="PAYMENT_NAME")
-    @NotNull
+    @Column(name = "payment_name")
     @Size(max = 255)
     private String paymentName;
 
-    public Long getId() {
+    public PaymentEntity() {
+
+    }
+
+    public PaymentEntity(String uuid, String paymentName) {
+        this.uuid = uuid;
+        this.paymentName = paymentName;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -60,5 +63,20 @@ public class PaymentEntity {
     public void setPaymentName(String paymentName) {
         this.paymentName = paymentName;
     }
-}
 
+    @Override
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, Boolean.FALSE);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashCodeBuilder.reflectionHashCode(this, Boolean.FALSE);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+    }
+
+}

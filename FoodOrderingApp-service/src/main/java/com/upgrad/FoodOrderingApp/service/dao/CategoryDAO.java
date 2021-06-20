@@ -1,6 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
 import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
+import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -9,28 +10,34 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-public class CategoryDAO {
+public class CategoryDao {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    public CategoryEntity getCategoryByUUId(final String categoryUUId){
+    public List<CategoryEntity> getAllCategories() {
         try {
-            return entityManager.createNamedQuery("categoryByUuid", CategoryEntity.class).setParameter("uuid", categoryUUId)
-                    .getSingleResult();
-        } catch(NoResultException nre) {
+            return entityManager.createNamedQuery("getAllCategories", CategoryEntity.class).getResultList();
+        } catch (NoResultException nre) {
             return null;
         }
     }
 
-    public List<CategoryEntity> getAllCategories(){
+    public CategoryEntity getCategoryById(final String categoryId) {
         try {
-            return entityManager.createNamedQuery("allCategories", CategoryEntity.class).getResultList();
-        } catch(NoResultException nre) {
+            return entityManager.createNamedQuery("getCategoryItem", CategoryEntity.class)
+                    .setParameter("categoryId", categoryId)
+                    .getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
+
+    public List<CategoryEntity> getCategoriesByRestaurant(RestaurantEntity restaurantEntity) {
+        try {
+            return entityManager.createNamedQuery("getCategoryByRestaurant", CategoryEntity.class).setParameter("restaurant", restaurantEntity).getResultList();
+        } catch (NoResultException nre) {
             return null;
         }
     }
 }
-
-
-

@@ -1,62 +1,64 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
-import com.upgrad.FoodOrderingApp.service.dao.AddressDAO;
-import com.upgrad.FoodOrderingApp.service.dao.OrderDAO;
-import com.upgrad.FoodOrderingApp.service.dao.OrderItemDAO;
-import com.upgrad.FoodOrderingApp.service.entity.*;
+import com.upgrad.FoodOrderingApp.service.dao.CouponDao;
+import com.upgrad.FoodOrderingApp.service.dao.OrderDao;
+import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
+import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
+import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
+import com.upgrad.FoodOrderingApp.service.exception.CouponNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
+
+import static com.upgrad.FoodOrderingApp.service.common.GenericErrorCode.CPF_001;
+import static com.upgrad.FoodOrderingApp.service.common.GenericErrorCode.CPF_002;
 
 @Service
 public class OrderService {
-    @Autowired
-    private OrderDAO orderDao;
 
     @Autowired
-    private CustomerService customerService;
+    CouponDao couponDao;
 
     @Autowired
-    AddressDAO addressDAO;
+    OrderDao orderDao;
 
-    @Autowired
-    ItemService itemService;
+    @Transactional(propagation = Propagation.REQUIRED)
+    public CouponEntity getCouponByCouponName(final String couponName) throws CouponNotFoundException {
+        if ((couponName == null) || (couponName.isEmpty())) {
+            throw new CouponNotFoundException(CPF_002.getCode(), CPF_002.getDefaultMessage());
+        }
 
-    @Autowired
-    OrderItemDAO orderItemDAO;
+        final CouponEntity couponEntity = couponDao.getCouponByCouponName(couponName);
 
-    @Autowired
-    RestaurantService restaurantService;
-
-    @Autowired
-    PaymentService paymentService;
-
-    @Transactional
-    public CouponEntity getCouponByCouponName(String couponName){
-        return orderDao.getCouponByName(couponName);
+        if (couponEntity != null) {
+            return couponEntity;
+        } else {
+            throw new CouponNotFoundException(CPF_001.getCode(), CPF_001.getDefaultMessage());
+        }
     }
 
-    @Transactional
-    public List<OrderEntity> getOrdersByCustomers(final String uuid) {
-        CustomerEntity customerEntity = customerService.getCustomerByUUID(uuid);
-        return orderDao.getCustomerOrders(customerEntity);
+    public CouponEntity getCouponByCouponId(String uuid) throws CouponNotFoundException {
+        CouponEntity couponEntity = couponDao.getCouponByCouponId(uuid);
+        if (couponEntity != null) {
+            return couponEntity;
+        } else
+            throw new CouponNotFoundException("CPF-002", "No coupon by this id");
     }
 
-    @Transactional
-    public CouponEntity getCouponByCouponId(final String couponUuid) {
-        return orderDao.getCouponByUuid(couponUuid);
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OrderEntity saveOrder(OrderEntity orderEntity) {
+        return orderDao.saveOrder(orderEntity);
     }
 
-    @Transactional
-    public OrderEntity saveOrderItem(OrderEntity savedOrderEntity){
-        return orderDao.saveOrder(savedOrderEntity);
+    public List<OrderEntity> getOrdersByCustomers(final String customerId) {
+        return orderDao.getOrdersForCustomer(customerId);
     }
 
-
-    @Transactional
-    public OrderItemEntity createOrderItemEntity(OrderItemEntity orderItemEntity) {
-        return orderItemDAO.createOrderItemEntity(orderItemEntity);
+    @Transactional(propagation = Propagation.REQUIRED)
+    public OrderItemEntity saveOrderItem(OrderItemEntity orderedItem) {
+        return orderDao.saveOrderItem(orderedItem);
     }
 }

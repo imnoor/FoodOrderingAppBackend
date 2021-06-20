@@ -1,6 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
-import com.upgrad.FoodOrderingApp.service.dao.StateDAO;
+import com.upgrad.FoodOrderingApp.service.dao.StateDao;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,9 +9,9 @@ import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 @Service
-public class StateService<StateDao> {
+public class StateService {
     @Autowired
-    private StateDAO stateDAO  ;
+    private StateDao stateDAO;
 
     @Transactional
     public StateEntity getStateById(final Long stateId) {

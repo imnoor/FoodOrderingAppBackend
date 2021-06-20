@@ -1,6 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
-import com.upgrad.FoodOrderingApp.service.entity.RestaurantCategoryEntity;
+import com.upgrad.FoodOrderingApp.service.entity.CategoryEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import org.springframework.stereotype.Repository;
 
@@ -10,44 +10,40 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-public class RestaurantDAO {
-
+public class RestaurantDao {
     @PersistenceContext
-    private EntityManager entityManager;
+    EntityManager entityManager;
 
-    public List<RestaurantEntity> getAllRestaurants() {
+    public List<RestaurantEntity> restaurantsByRating() {
+        return entityManager.createNamedQuery("getAllRestaurants").getResultList();
+    }
+
+    public List<RestaurantEntity> restaurantsByName(String name) {
+        return entityManager.createNamedQuery("getRestaurantsByName").setParameter("name", "%" + name.toLowerCase() + "%").getResultList();
+    }
+
+    public RestaurantEntity getRestaurantByID(String restaurantId) {
         try {
-            return entityManager.createNamedQuery("allRestaurants", RestaurantEntity.class).getResultList();
-        } catch(NoResultException nre) {
+            return entityManager.createNamedQuery("getRestaurantById", RestaurantEntity.class).setParameter("id", restaurantId).getSingleResult();
+        } catch (NoResultException e) {
             return null;
         }
     }
 
-    public List<RestaurantEntity> getRestaurantsByName(String restaurantName) {
+    public List<RestaurantEntity> restaurantByCategory(CategoryEntity categoryEntity) {
         try {
-            return entityManager.createNamedQuery("findByName", RestaurantEntity.class).setParameter("restaurantName","%" + restaurantName.toLowerCase() + "%" ).getResultList();
-        } catch(NoResultException nre) {
+            return entityManager.createNamedQuery("getRestaurantByCategory", RestaurantEntity.class).setParameter("category", categoryEntity).getResultList();
+        } catch (NoResultException e) {
             return null;
         }
     }
 
-    public List<RestaurantCategoryEntity> getRestaurantByCategoryId(final Long categoryID) {
+    public RestaurantEntity updateRestaurantRating(RestaurantEntity restaurant) {
         try {
-            return entityManager.createNamedQuery("restaurantsByCategoryId", RestaurantCategoryEntity.class).setParameter("id",categoryID).getResultList();
-        } catch(NoResultException nre) {
+            entityManager.merge(restaurant);
+            return restaurant;
+        } catch (NoResultException e) {
             return null;
         }
-    }
-
-    public RestaurantEntity getRestaurantByUUId(String restaurantUUID) {
-        try {
-            return entityManager.createNamedQuery("findRestaurantByUUId", RestaurantEntity.class).setParameter("restaurantUUID",restaurantUUID.toLowerCase()).getSingleResult();
-        } catch(NoResultException nre) {
-            return null;
-        }
-    }
-
-    public void updateRestaurant(final RestaurantEntity updatedRestaurantEntity) {
-        entityManager.merge(updatedRestaurantEntity);
     }
 }

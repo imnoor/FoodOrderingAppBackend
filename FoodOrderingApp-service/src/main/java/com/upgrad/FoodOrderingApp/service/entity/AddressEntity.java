@@ -54,12 +54,24 @@ public class AddressEntity implements Serializable {
     @Column(name = "active")
     private Integer active;
 
-    @OneToOne(cascade=CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinTable(name = "customer_address",
             joinColumns = @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false)
     )
     CustomerEntity customer;
+
+    public AddressEntity(String uuid, String flatBuilNo, String locality, String city, String pincode, StateEntity state) {
+        this.uuid = uuid;
+        this.flatBuilNo = flatBuilNo;
+        this.locality = locality;
+        this.city = city;
+        this.pincode = pincode;
+        this.state = state;
+    }
+
+    public AddressEntity() {
+    }
 
     public CustomerEntity getCustomer() {
         return customer;

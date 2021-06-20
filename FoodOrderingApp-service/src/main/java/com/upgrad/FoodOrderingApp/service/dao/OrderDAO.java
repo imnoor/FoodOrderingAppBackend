@@ -1,8 +1,7 @@
 package com.upgrad.FoodOrderingApp.service.dao;
 
-import com.upgrad.FoodOrderingApp.service.entity.CouponEntity;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.OrderEntity;
+import com.upgrad.FoodOrderingApp.service.entity.OrderItemEntity;
 import com.upgrad.FoodOrderingApp.service.entity.RestaurantEntity;
 import org.springframework.stereotype.Repository;
 
@@ -12,27 +11,13 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-public class OrderDAO {
+public class OrderDao {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    EntityManager entityManager;
 
-    public CouponEntity getCouponByName(String couponName) {
-        try {
-            return entityManager.createNamedQuery("couponByName", CouponEntity.class).setParameter("couponName", couponName)
-                    .getSingleResult();
-        } catch(NoResultException nre) {
-            return null;
-        }
-    }
-
-    public List<OrderEntity> getCustomerOrders(CustomerEntity customerEntity) {
-        try {
-            return entityManager.createNamedQuery("ordersByCustomer", OrderEntity.class).setParameter("customer", customerEntity)
-                    .getResultList();
-        } catch(NoResultException nre) {
-            return null;
-        }
+    public List<OrderEntity> getOrdersForCustomer(final String customerId) {
+        return entityManager.createNamedQuery("getOrdersByCustomer", OrderEntity.class).setParameter("customerId", customerId).getResultList();
     }
 
     public OrderEntity saveOrder(OrderEntity orderEntity) {
@@ -40,20 +25,18 @@ public class OrderDAO {
         return orderEntity;
     }
 
-    public CouponEntity getCouponByUuid(String couponId) {
-        try {
-            return entityManager.createNamedQuery("couponByUuid", CouponEntity.class).setParameter("uuid", couponId)
-                    .getSingleResult();
-        } catch(NoResultException nre) {
-            return null;
-        }
+
+    public OrderItemEntity saveOrderItem(OrderItemEntity orderedItem) {
+        entityManager.persist(orderedItem);
+        return orderedItem;
     }
 
-    public List<OrderEntity> getOrdersByRestaurant(final RestaurantEntity restaurantEntity) {
+    public List<OrderEntity> getOrdersByRestaurant(RestaurantEntity restaurant) {
         try {
-            return entityManager.createNamedQuery("ordersByRestaurant", OrderEntity.class)
-                    .setParameter("restaurant", restaurantEntity).getResultList();
+            return entityManager.createNamedQuery("getOrdersByRestaurant", OrderEntity.class)
+                    .setParameter("restaurant", restaurant).getResultList();
         } catch (NoResultException nre) {
+            System.out.printf("GetOrderRestaurant");
             return null;
         }
     }

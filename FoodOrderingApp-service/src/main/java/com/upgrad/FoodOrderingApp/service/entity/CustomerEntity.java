@@ -63,7 +63,7 @@ public class CustomerEntity implements Serializable {
     @Size(max = 30)
     private String contactNumber;
 
-    @OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "customer_address",
             joinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)
@@ -161,9 +161,9 @@ public class CustomerEntity implements Serializable {
 
 
     public boolean hasAddress(String addressUuid) {
-        for (AddressEntity addr: addressEntities
-             ) {
-            if(addr.getUuid().equals(addressUuid))
+        for (AddressEntity addr : addressEntities
+        ) {
+            if (addr.getUuid().equals(addressUuid))
                 return true;
         }
         return false;

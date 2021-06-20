@@ -32,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ItemControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -47,38 +46,38 @@ public class ItemControllerTest {
     public void shouldGetItemsByPopularity() throws Exception {
         final RestaurantEntity restaurantEntity = new RestaurantEntity();
         when(mockRestaurantService.restaurantByUUID("some_restaurant_id"))
-                .thenReturn(restaurantEntity);
+            .thenReturn(restaurantEntity);
 
         final ItemEntity itemEntity = new ItemEntity();
         final String itemId = UUID.randomUUID().toString();
         itemEntity.setUuid(itemId);
         itemEntity.setType(NON_VEG);
         when(mockItemService.getItemsByPopularity(restaurantEntity))
-                .thenReturn(Collections.singletonList(itemEntity));
+            .thenReturn(Collections.singletonList(itemEntity));
 
         final String responseString = mockMvc
-                .perform(get("/item/restaurant/some_restaurant_id")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+            .perform(get("/item/restaurant/some_restaurant_id")
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
 
         final ItemListResponse itemListResponse = new ObjectMapper().readValue(responseString, ItemListResponse.class);
         assertEquals(itemListResponse.size(), 1);
         assertEquals(itemListResponse.get(0).getId().toString(), itemId);
 
     }
-/*
+
     //This test case passes when you have handled the exception of trying to fetch most popular items of a restaurant,
     // but the restaurant id you gave does not exist.
     @Test
     public void shouldNotGetItemsByPopularityIfRestaurantDoesNOtExistForGivenId() throws Exception {
         when(mockRestaurantService.restaurantByUUID("some_restaurant_id"))
-                .thenThrow(new RestaurantNotFoundException("RNF-001", "No restaurant by this id"));
+            .thenThrow(new RestaurantNotFoundException("RNF-001", "No restaurant by this id"));
 
         mockMvc
-                .perform(get("/item/restaurant/some_restaurant_id").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("code").value("RNF-001"));
+            .perform(get("/item/restaurant/some_restaurant_id").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("code").value("RNF-001"));
     }
-*/
+
 }

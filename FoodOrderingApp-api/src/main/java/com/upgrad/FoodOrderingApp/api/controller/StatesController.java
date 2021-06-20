@@ -25,14 +25,14 @@ public class StatesController {
 
         List<StateEntity> states = addressService.getAllStates();
         List<StatesList> stateList = new ArrayList<>();
-        for (StateEntity stateEntity :states) {
+        for (StateEntity stateEntity : states) {
             StatesList stateTmp = new StatesList();
             stateTmp.setId(UUID.fromString(stateEntity.getUuid()));
             stateTmp.setStateName(stateEntity.getStateName());
             stateList.add(stateTmp);
         }
         StatesListResponse response = new StatesListResponse();
-        if(stateList.size()>0) {
+        if (stateList.size() > 0) {
             response.setStates(stateList);
         }
         return new ResponseEntity<StatesListResponse>(response, HttpStatus.OK);

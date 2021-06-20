@@ -1,27 +1,34 @@
 package com.upgrad.FoodOrderingApp.service.businness;
 
-import com.upgrad.FoodOrderingApp.service.dao.PaymentDAO;
+import com.upgrad.FoodOrderingApp.service.dao.PaymentDao;
 import com.upgrad.FoodOrderingApp.service.entity.PaymentEntity;
+import com.upgrad.FoodOrderingApp.service.exception.PaymentMethodNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
+
+import static com.upgrad.FoodOrderingApp.service.common.GenericErrorCode.PNF_002;
 
 @Service
 public class PaymentService {
 
     @Autowired
-    private PaymentDAO paymentDao;
+    PaymentDao paymentDao;
 
-    @Transactional
-    public List<PaymentEntity> getPaymentMethods() {
-        return paymentDao.getPaymentMethods();
+    @Transactional(propagation = Propagation.REQUIRED)
+    public List<PaymentEntity> getAllPaymentMethods() {
+        return paymentDao.getAllPaymentMethods();
     }
 
-    @Transactional
-    public PaymentEntity getPaymentByUUID(final String paymentUuid) {
-        return paymentDao.getPaymentByUuid(paymentUuid);
+    @Transactional(propagation = Propagation.REQUIRED)
+    public PaymentEntity getPaymentByUUID(String paymentID) throws PaymentMethodNotFoundException {
+        PaymentEntity paymentEntity = paymentDao.getPaymentByUUID(paymentID);
+        if (paymentEntity == null) {
+            throw new PaymentMethodNotFoundException(PNF_002.getCode(), PNF_002.getDefaultMessage());
+        } else
+            return paymentEntity;
     }
-
 }

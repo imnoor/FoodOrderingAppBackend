@@ -1,8 +1,6 @@
 package com.upgrad.FoodOrderingApp.service.exception;
 
 
-import org.springframework.http.HttpStatus;
-
 import java.io.PrintStream;
 import java.io.PrintWriter;
 

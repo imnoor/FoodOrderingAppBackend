@@ -34,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class CategoryControllerTest {
 
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -54,15 +53,15 @@ public class CategoryControllerTest {
         final CategoryEntity categoryEntity = new CategoryEntity();
         final String categoryEntityId = UUID.randomUUID().toString();
         categoryEntity.setUuid(categoryEntityId);
-        categoryEntity.setItemEntities(Collections.singletonList(itemEntity));
+        categoryEntity.setItems(Collections.singletonList(itemEntity));
 
 
-        when(mockCategoryService.getCategoryEntityByUuid("sampleCategoryId")).thenReturn(categoryEntity);
+        when(mockCategoryService.getCategoryById("sampleCategoryId")).thenReturn(categoryEntity);
 
         final String response = mockMvc
-                .perform(get("/category/sampleCategoryId").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+            .perform(get("/category/sampleCategoryId").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
 
         final CategoryDetailsResponse categoryDetailsResponse = new ObjectMapper().readValue(response, CategoryDetailsResponse.class);
 
@@ -71,35 +70,35 @@ public class CategoryControllerTest {
         assertEquals(categoryDetailsResponse.getItemList().get(0).getId().toString(), itemId);
         assertEquals(categoryDetailsResponse.getItemList().get(0).getPrice().intValue(), 200);
         assertEquals(categoryDetailsResponse.getItemList().get(0).getItemType().toString(), "NON_VEG");
-        verify(mockCategoryService, times(1)).getCategoryEntityByUuid("sampleCategoryId");
+        verify(mockCategoryService, times(1)).getCategoryById("sampleCategoryId");
     }
 
     //This test case passes when you have handled the exception of trying to fetch any category but your category id
     // field is empty.
     @Test
     public void shouldNotGetCategoryByidIfCategoryIdIsEmpty() throws Exception {
-        when(mockCategoryService.getCategoryEntityByUuid("emptyString"))
-                .thenThrow(new CategoryNotFoundException("CNF-001", "Category id field should not be empty"));
+        when(mockCategoryService.getCategoryById(anyString()))
+            .thenThrow(new CategoryNotFoundException("CNF-001", "Category id field should not be empty"));
 
         mockMvc
-                .perform(get("/category/emptyString").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("code").value("CNF-001"));
-        verify(mockCategoryService, times(1)).getCategoryEntityByUuid(anyString());
+            .perform(get("/category/emptyString").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("code").value("CNF-001"));
+        verify(mockCategoryService, times(1)).getCategoryById(anyString());
     }
 
     //This test case passes when you have handled the exception of trying to fetch any category by its id, while there
     // is not category by that id in the database
     @Test
     public void shouldNotGetCategoryByIdIfCategoryDoesNotExistAgainstGivenId() throws Exception {
-        when(mockCategoryService.getCategoryEntityByUuid("someCategory"))
-                .thenThrow(new CategoryNotFoundException("CNF-002", "No category by this id"));
+        when(mockCategoryService.getCategoryById("someCategory"))
+            .thenThrow(new CategoryNotFoundException("CNF-002", "No category by this id"));
 
         mockMvc
-                .perform(get("/category/someCategory").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("code").value("CNF-002"));
-        verify(mockCategoryService, times(1)).getCategoryEntityByUuid("someCategory");
+            .perform(get("/category/someCategory").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("code").value("CNF-002"));
+        verify(mockCategoryService, times(1)).getCategoryById("someCategory");
     }
 
     //This test case passes when you are able to fetch the list of all categories ordered by their name.
@@ -110,34 +109,34 @@ public class CategoryControllerTest {
         categoryEntity.setUuid(categoryEntityId);
         categoryEntity.setCategoryName("sampleCategoryName");
 
-        when(mockCategoryService.getAllCategories()).thenReturn(Collections.singletonList(categoryEntity));
+        when(mockCategoryService.getAllCategoriesOrderedByName()).thenReturn(Collections.singletonList(categoryEntity));
 
         final String response = mockMvc
-                .perform(get("/category").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+            .perform(get("/category").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
 
         final CategoriesListResponse categoriesListResponse = new ObjectMapper().readValue(response, CategoriesListResponse.class);
         assertEquals(categoriesListResponse.getCategories().size(), 1);
         assertEquals(categoriesListResponse.getCategories().get(0).getId().toString(), categoryEntityId);
         assertEquals(categoriesListResponse.getCategories().get(0).getCategoryName(), "sampleCategoryName");
 
-        verify(mockCategoryService, times(1)).getAllCategories();
+        verify(mockCategoryService, times(1)).getAllCategoriesOrderedByName();
     }
-/*
+
     @Test
     public void shouldNotGetAnyCategoryOrderedByNameIfItDoesNotExists() throws Exception {
         when(mockCategoryService.getAllCategoriesOrderedByName()).thenReturn(Collections.emptyList());
 
         final String response = mockMvc
-                .perform(get("/category").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsString();
+            .perform(get("/category").contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
 
         final CategoriesListResponse categoriesListResponse = new ObjectMapper().readValue(response, CategoriesListResponse.class);
         assertNull(categoriesListResponse.getCategories());
         verify(mockCategoryService, times(1)).getAllCategoriesOrderedByName();
     }
-*/
+
 
 }

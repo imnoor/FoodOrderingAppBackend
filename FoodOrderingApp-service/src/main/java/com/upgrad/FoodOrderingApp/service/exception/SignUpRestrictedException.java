@@ -1,7 +1,5 @@
 package com.upgrad.FoodOrderingApp.service.exception;
 
-import org.springframework.http.HttpStatus;
-
 import java.io.PrintStream;
 import java.io.PrintWriter;
 
@@ -40,15 +38,5 @@ public class SignUpRestrictedException extends Exception {
         return errorMessage;
     }
 
-    public HttpStatus getHttpCode() {
-        switch(code) {
-            case "SGR-001" : return HttpStatus.BAD_REQUEST;
-            case "SGR-002" : return HttpStatus.BAD_REQUEST;
-            case "SGR-003" : return HttpStatus.BAD_REQUEST;
-            case "SGR-004" : return HttpStatus.BAD_REQUEST;
-            case "SGR-005" : return HttpStatus.BAD_REQUEST;
-        }
-        return HttpStatus.BAD_REQUEST;
-    }
 }
 

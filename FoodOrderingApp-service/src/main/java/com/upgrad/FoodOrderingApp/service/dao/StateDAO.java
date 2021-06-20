@@ -10,7 +10,7 @@ import javax.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-public class StateDAO {
+public class StateDao {
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -18,7 +18,7 @@ public class StateDAO {
         try {
             return entityManager.createNamedQuery("stateById", StateEntity.class).setParameter("id", stateId)
                     .getSingleResult();
-        } catch(NoResultException nre) {
+        } catch (NoResultException nre) {
             return null;
         }
     }
