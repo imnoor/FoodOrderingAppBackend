@@ -37,15 +37,5 @@ public class AuthorizationFailedException extends Exception {
     public String getErrorMessage() {
         return errorMessage;
     }
-
-    public HttpStatus getHttpCode() {
-        switch(code) {
-            case "ATHR-001" : return HttpStatus.FORBIDDEN;
-            case "ATHR-002" : return HttpStatus.FORBIDDEN;
-            case "ATHR-003" : return HttpStatus.FORBIDDEN;
-            case "ATHR-004" : return HttpStatus.FORBIDDEN;
-        }
-        return HttpStatus.FORBIDDEN;
-    }
 }
 

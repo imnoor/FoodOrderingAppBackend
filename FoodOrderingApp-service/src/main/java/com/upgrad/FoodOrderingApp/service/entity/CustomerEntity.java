@@ -156,7 +156,17 @@ public class CustomerEntity implements Serializable {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, ToStringStyle.MULTI_LINE_STYLE);
+        return "CustomerEntity{" +
+                "id=" + id +
+                ", uuid='" + uuid + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
+                ", contactNumber='" + contactNumber + '\'' +
+                ", addressEntities=" + addressEntities +
+                '}';
     }
 
 
