@@ -38,15 +38,5 @@ public class SaveAddressException extends Exception {
     public String getErrorMessage() {
         return errorMessage;
     }
-
-    public HttpStatus getHttpCode() {
-        switch(code) {
-            case "SAR-001" : return HttpStatus.BAD_REQUEST;
-            case "SAR-002" : return HttpStatus.BAD_REQUEST;
-            case "ANF-002" : return HttpStatus.BAD_REQUEST;
-        }
-        return HttpStatus.NOT_FOUND;
-    }
-
 }
 
