@@ -44,6 +44,16 @@ public class RestaurantController {
     @Autowired
     private CustomerService customerService;
 
+    /**
+     * to update restaurant rating by the user
+     * @param customerRating
+     * @param restaurantId
+     * @param authorization
+     * @return
+     * @throws RestaurantNotFoundException
+     * @throws AuthorizationFailedException
+     * @throws InvalidRatingException
+     */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.PUT, path = "/{restaurant_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<RestaurantUpdatedResponse> updateRestaurantDetails(
@@ -63,10 +73,8 @@ public class RestaurantController {
 
 
     /**
-     * Method takes no parameter as input
-     *
-     * @return ResponseEntity with List of restaurant with all the details
-     * @throws UnexpectedException on any errors
+     * get all restaurant details
+     * @return
      */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -118,7 +126,7 @@ public class RestaurantController {
     }
 
     /**
-     * This Method takes string as the input which if forms a part of any such restaurant name,the restaurant is included in the return list of restaurants
+     * get restaurant details by name
      *
      * @return ResponseEntity with list of all of the Restaurants
      * @throws RestaurantNotFoundException if the name is empty
@@ -128,10 +136,8 @@ public class RestaurantController {
     public ResponseEntity<RestaurantListResponse> getAllRestaurantDetails(@PathVariable("reastaurant_name") String name) throws RestaurantNotFoundException {
         List<RestaurantList> restaurantList = new ArrayList<RestaurantList>();
 
-        //Get Restaurants information
         List<RestaurantEntity> restaurantEntityList = restaurantService.restaurantsByName(name);
 
-        //transform restaurant information into response objects
         for (RestaurantEntity restaurantEntity : restaurantEntityList) {
             RestaurantList restaurant = new RestaurantList();
             restaurant.setId(UUID.fromString(restaurantEntity.getUuid()));
@@ -141,7 +147,6 @@ public class RestaurantController {
             restaurant.setNumberCustomersRated(restaurantEntity.getNumberOfCustomersRated());
             restaurant.setAveragePrice(restaurantEntity.getAveragePriceForTwo());
 
-            //extract address and transform to response object
             RestaurantDetailsResponseAddress address = new RestaurantDetailsResponseAddress();
             address.setId(UUID.fromString((restaurantEntity.getAddress().getUuid())));
             address.setFlatBuildingName(restaurantEntity.getAddress().getFlatBuilNo());
@@ -154,7 +159,6 @@ public class RestaurantController {
             address.setState(state);
             restaurant.setAddress(address);
 
-            //extract category and sort in alphabetical order
             List<CategoryEntity> categoryEntityList = categoryService.getCategoriesByRestaurant(restaurantEntity.getUuid());
             List<String> categoryNames = new ArrayList<>();
             for (CategoryEntity category : categoryEntityList) {
@@ -173,19 +177,17 @@ public class RestaurantController {
     }
 
     /**
-     * Method takes category as the input which if served by a restaurant,the restaurant is included in the return list of restaurants
-     *
-     * @return ResponseEntity with list of all of the Restaurants
-     * @throws CategoryNotFoundException if the name is empty
+     * get restaurants list based on category
+     * @param categoryId
+     * @return
+     * @throws CategoryNotFoundException
      */
     @CrossOrigin
     @RequestMapping(path = "/category/{category_id}", method = RequestMethod.GET)
     public ResponseEntity<RestaurantListResponse> getRestaurantByCategory(@PathVariable("category_id") String categoryId) throws CategoryNotFoundException {
         List<RestaurantList> restaurantList = new ArrayList<RestaurantList>();
-        //Get Restaurants information
         List<RestaurantEntity> restaurantEntityList = restaurantService.restaurantByCategory(categoryId);
 
-        //transform restaurant information into response objects
         for (RestaurantEntity restaurantEntity : restaurantEntityList) {
             RestaurantList restaurant = new RestaurantList();
             restaurant.setId(UUID.fromString(restaurantEntity.getUuid()));
@@ -194,7 +196,6 @@ public class RestaurantController {
             restaurant.setCustomerRating(new BigDecimal(Double.toString(restaurantEntity.getCustomerRating())).setScale(2, RoundingMode.HALF_DOWN));
             restaurant.setNumberCustomersRated(restaurantEntity.getNumberOfCustomersRated());
 
-            //extract address and transform to response object
             RestaurantDetailsResponseAddress address = new RestaurantDetailsResponseAddress();
             address.setId(UUID.fromString((restaurantEntity.getAddress().getUuid())));
             address.setFlatBuildingName(restaurantEntity.getAddress().getFlatBuilNo());
@@ -207,7 +208,6 @@ public class RestaurantController {
             address.setState(state);
             restaurant.setAddress(address);
 
-            //extract category and sort in alphabetical order
             List<CategoryEntity> categoryEntityList = categoryService.getCategoriesByRestaurant(restaurantEntity.getUuid());
             List<String> categoryNames = new ArrayList<>();
             for (CategoryEntity category : categoryEntityList) {
@@ -229,19 +229,18 @@ public class RestaurantController {
     }
 
     /**
-     * This Method takes category as the input which if served by a restaurant,the restaurant is included in the return list of restaurants
-     *
-     * @return ResponseEntity with list of all of the Restaurants
-     * @throws CategoryNotFoundException if the name is empty
+     * get restaurant by id
+     * @param uuid
+     * @return
+     * @throws RestaurantNotFoundException
+     * @throws CategoryNotFoundException
      */
     @CrossOrigin
     @RequestMapping(path = "/{restaurant_id}", method = RequestMethod.GET)
     public ResponseEntity<RestaurantDetailsResponse> getRestaurantById(@PathVariable("restaurant_id") String uuid) throws RestaurantNotFoundException, CategoryNotFoundException {
         RestaurantDetailsResponse restaurant = new RestaurantDetailsResponse();
-        //Get Restaurants information
         RestaurantEntity restaurantEntity = restaurantService.restaurantByUUID(uuid);
 
-        //transform restaurant information into response objects
         restaurant.setId(UUID.fromString(restaurantEntity.getUuid()));
         restaurant.setRestaurantName(restaurantEntity.getRestaurantName());
         restaurant.setPhotoURL(restaurantEntity.getPhotoUrl());
@@ -249,7 +248,6 @@ public class RestaurantController {
         restaurant.setAveragePrice(restaurantEntity.getAveragePriceForTwo());
         restaurant.setNumberCustomersRated(restaurantEntity.getNumberOfCustomersRated());
 
-        //extract address and transform to response object
         RestaurantDetailsResponseAddress address = new RestaurantDetailsResponseAddress();
         address.setId(UUID.fromString((restaurantEntity.getAddress().getUuid())));
         address.setFlatBuildingName(restaurantEntity.getAddress().getFlatBuilNo());
@@ -262,11 +260,9 @@ public class RestaurantController {
         address.setState(state);
         restaurant.setAddress(address);
 
-        //extract categories
         List<CategoryEntity> categoryEntityList = categoryService.getCategoriesByRestaurant(uuid);
         List<CategoryList> categoryList = new ArrayList<>();
 
-        // from the list of categories, categorize the restaurant items into the different categories
         for (CategoryEntity ce : categoryEntityList) {
             CategoryList category = new CategoryList();
             category.setId(UUID.fromString(ce.getUuid()));

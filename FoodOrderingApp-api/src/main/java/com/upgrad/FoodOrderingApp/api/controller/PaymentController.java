@@ -24,6 +24,10 @@ public class PaymentController {
     @Autowired
     PaymentService paymentService;
 
+    /**
+     * to list all available payment methods
+     * @return
+     */
     @CrossOrigin
     @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PaymentListResponse> getPaymentModes() {

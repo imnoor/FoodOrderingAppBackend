@@ -13,11 +13,21 @@ public class CustomerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     *
+     * @param customerEntity
+     * @return
+     */
     public CustomerEntity createCustomer(CustomerEntity customerEntity) {
         entityManager.persist(customerEntity);
         return customerEntity;
     }
 
+    /**
+     *
+     * @param userUuid
+     * @return
+     */
     public CustomerEntity getUser(final String userUuid) {
         try {
             return entityManager.createNamedQuery("userByUuid", CustomerEntity.class).setParameter("uuid", userUuid)
@@ -27,6 +37,11 @@ public class CustomerDao {
         }
     }
 
+    /**
+     *
+     * @param contact
+     * @return
+     */
     public CustomerEntity getUserByContact(final String contact) {
         try {
             return entityManager.createNamedQuery("userByContact", CustomerEntity.class).setParameter("contactNumber", contact).getSingleResult();
@@ -35,6 +50,11 @@ public class CustomerDao {
         }
     }
 
+    /**
+     *
+     * @param email
+     * @return
+     */
     public CustomerEntity getUserByEmail(final String email) {
         try {
             return entityManager.createNamedQuery("userByEmail", CustomerEntity.class).setParameter("email", email).getSingleResult();
@@ -43,17 +63,31 @@ public class CustomerDao {
         }
     }
 
+    /**
+     *
+     * @param customerEntity
+     * @return
+     */
     public CustomerEntity updateUser(final CustomerEntity customerEntity) {
         return entityManager.merge(customerEntity);
     }
 
+    /**
+     *
+     * @param delUser
+     * @return
+     */
     public String deleteUser(CustomerEntity delUser) {
         String uuid = delUser.getUuid();
         entityManager.remove(delUser);
         return uuid;
     }
 
-
+    /**
+     *
+     * @param customerAuthEntity
+     * @return
+     */
     public CustomerAuthEntity createAuthToken(CustomerAuthEntity customerAuthEntity) {
         entityManager.persist(customerAuthEntity);
         return customerAuthEntity;
@@ -68,7 +102,11 @@ public class CustomerDao {
         }
     }
 
-
+    /**
+     *
+     * @param customerAuthEntity
+     * @return
+     */
     public CustomerAuthEntity updateAuthToken(CustomerAuthEntity customerAuthEntity) {
         return entityManager.merge(customerAuthEntity);
     }

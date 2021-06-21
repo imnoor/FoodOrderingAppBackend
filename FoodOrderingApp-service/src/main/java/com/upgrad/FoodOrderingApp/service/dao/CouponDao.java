@@ -12,6 +12,11 @@ public class CouponDao {
     @PersistenceContext
     EntityManager entityManager;
 
+    /**
+     *
+     * @param couponName
+     * @return
+     */
     public CouponEntity getCouponByCouponName(final String couponName) {
         try {
             return entityManager.createNamedQuery("getCouponByName", CouponEntity.class)
@@ -22,6 +27,11 @@ public class CouponDao {
         }
     }
 
+    /**
+     *
+     * @param uuid
+     * @return
+     */
     public CouponEntity getCouponByCouponId(String uuid) {
         try {
             return entityManager.createNamedQuery("getCouponByUuid", CouponEntity.class)

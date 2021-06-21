@@ -24,6 +24,10 @@ public class RestaurantService {
     @Autowired
     private CategoryDao categoryDao;
 
+    /**
+     *
+     * @return
+     */
     public List<RestaurantEntity> restaurantsByRating() {
         return restaurantDao.restaurantsByRating();
     }
@@ -34,6 +38,12 @@ public class RestaurantService {
         return restaurantDao.restaurantsByName(name);
     }
 
+    /**
+     *
+     * @param categoryUuid
+     * @return
+     * @throws CategoryNotFoundException
+     */
     public List<RestaurantEntity> restaurantByCategory(String categoryUuid) throws CategoryNotFoundException {
         if (categoryUuid.trim().length() <= 0) {  //if the category uuid id is empty throw error
             throw new CategoryNotFoundException(CNF_001.getCode(), CNF_001.getDefaultMessage());
@@ -46,6 +56,12 @@ public class RestaurantService {
         return restaurantDao.restaurantByCategory(categoryEntity);
     }
 
+    /**
+     *
+     * @param uuid
+     * @return
+     * @throws RestaurantNotFoundException
+     */
     public RestaurantEntity restaurantByUUID(String uuid) throws RestaurantNotFoundException {
         if (uuid.trim().length() <= 0) {  //if the  uuid id is empty throw error
             throw new RestaurantNotFoundException(RNF_002.getCode(), RNF_002.getDefaultMessage());
@@ -57,6 +73,13 @@ public class RestaurantService {
         return restaurantEntity;
     }
 
+    /**
+     *
+     * @param restaurant
+     * @param customerRating
+     * @return
+     * @throws InvalidRatingException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public RestaurantEntity updateRestaurantRating(RestaurantEntity restaurant, Double customerRating) throws InvalidRatingException {
         if (customerRating < 1.0 || customerRating > 5.0) {

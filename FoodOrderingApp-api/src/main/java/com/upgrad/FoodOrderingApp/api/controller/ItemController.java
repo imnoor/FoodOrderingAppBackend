@@ -25,6 +25,15 @@ public class ItemController {
     @Autowired
     private RestaurantService restaurantService;
 
+
+    /**
+     *
+     * @param restaurantId
+     * @return
+     * @throws RestaurantNotFoundException
+     *
+     * to get favourite items ordered by customers for a restaurant
+     */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET,
             path = "/item/restaurant/{restaurant_id}",

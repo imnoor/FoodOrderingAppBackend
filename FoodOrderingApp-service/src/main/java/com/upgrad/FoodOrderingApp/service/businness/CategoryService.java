@@ -24,16 +24,31 @@ public class CategoryService {
     @Autowired
     private RestaurantDao restaurantDao;
 
+    /**
+     *
+     * @param restaurantUuid
+     * @return
+     */
     public List<CategoryEntity> getCategoriesByRestaurant(String restaurantUuid) {
         RestaurantEntity restaurantEntity = restaurantDao.getRestaurantByID(restaurantUuid);
         return categoryDao.getCategoriesByRestaurant(restaurantEntity);
     }
 
+    /**
+     *
+     * @return
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public List<CategoryEntity> getAllCategoriesOrderedByName() {
         return categoryDao.getAllCategories();
     }
 
+    /**
+     *
+     * @param categoryId
+     * @return
+     * @throws CategoryNotFoundException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public CategoryEntity getCategoryById(String categoryId) throws CategoryNotFoundException {
 
