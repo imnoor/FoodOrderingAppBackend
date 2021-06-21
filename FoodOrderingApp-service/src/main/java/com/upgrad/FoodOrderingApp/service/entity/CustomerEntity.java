@@ -63,7 +63,10 @@ public class CustomerEntity implements Serializable {
     @Size(max = 30)
     private String contactNumber;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    /*
+        A customer has many addresses, and relationship is based on an intermediary table.
+     */
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "customer_address",
             joinColumns = @JoinColumn(name = "customer_id", referencedColumnName = "id", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = false)

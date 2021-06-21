@@ -54,6 +54,10 @@ public class AddressEntity implements Serializable {
     @Column(name = "active")
     private Integer active;
 
+
+    /*
+        Many addresses are mapped to one customer and relationship uses intermediate table.
+     */
     @ManyToOne
     @JoinTable(name = "customer_address",
     joinColumns = {@JoinColumn(name = "address_id")},

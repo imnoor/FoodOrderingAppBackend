@@ -3,10 +3,8 @@ package com.upgrad.FoodOrderingApp.api.controller;
 import com.upgrad.FoodOrderingApp.api.model.*;
 import com.upgrad.FoodOrderingApp.service.businness.AddressService;
 import com.upgrad.FoodOrderingApp.service.businness.CustomerService;
-import com.upgrad.FoodOrderingApp.service.businness.StateService;
 import com.upgrad.FoodOrderingApp.service.common.FoodOrderingConstants;
 import com.upgrad.FoodOrderingApp.service.entity.AddressEntity;
-import com.upgrad.FoodOrderingApp.service.entity.CustomerAuthEntity;
 import com.upgrad.FoodOrderingApp.service.entity.CustomerEntity;
 import com.upgrad.FoodOrderingApp.service.entity.StateEntity;
 import com.upgrad.FoodOrderingApp.service.exception.AddressNotFoundException;
@@ -31,11 +29,22 @@ public class AddressController {
     @Autowired
     private CustomerService customerService;
 
-    @Autowired
-    private StateService stateService;
-
+    /**
+     *
+     * @param authorization
+     * @param saveAddressRequest
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws SaveAddressException
+     * @throws AddressNotFoundException
+     *
+     * The controller method for adding new address
+     *
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/address", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SaveAddressResponse> saveAddress(@RequestHeader("authorization") final String authorization, @RequestBody(required = false) final SaveAddressRequest saveAddressRequest) throws AuthorizationFailedException, SaveAddressException, AddressNotFoundException {
+
+        //Retrieve auth token from the authorization header
         String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
         if (authEncoded.length > 1) {
@@ -43,9 +52,11 @@ public class AddressController {
         } else {
             authToken = "nonexistant";
         }
+        //get customer entity based on the auth token
         CustomerEntity customerEntity = customerService.getCustomerByAuthToken(authToken);
         StateEntity stateEntity = addressService.getStateByUUID(saveAddressRequest.getStateUuid());
-        //Lets do some validations one day ... eventually
+
+        //Set entity values based on request
         AddressEntity addressEntity = new AddressEntity();
         addressEntity.setFlatBuilNo(saveAddressRequest.getFlatBuildingName());
         addressEntity.setLocality(saveAddressRequest.getLocality());
@@ -58,8 +69,18 @@ public class AddressController {
         return new ResponseEntity<>(saveAddressResponse, HttpStatus.CREATED);
     }
 
+    /**
+     *
+     * @param authorization
+     * @return
+     * @throws AuthorizationFailedException
+     *
+     * Retrieve addresses of customer
+     */
+
     @RequestMapping(method = RequestMethod.GET, path = "/address/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<AddressListResponse> getAllSavedAddresses(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
+        //Retrieve auth token from the authorization header
         String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
         if (authEncoded.length > 1) {
@@ -68,9 +89,11 @@ public class AddressController {
 
             authToken = "nonexistant";
         }
+        //get customer for auth token
         CustomerEntity customerEntity = customerService.getCustomerByAuthToken(authToken);
         customerService.validateAccessToken(authToken);
         List<AddressEntity> addressEntities = addressService.getAllAddress(customerEntity);
+        //Iterate and populate address list response
         List<AddressList> addressList = new ArrayList<>();
         for (AddressEntity addressEntity : addressEntities) {
             AddressList addTmp = new AddressList();
@@ -89,6 +112,18 @@ public class AddressController {
         return new ResponseEntity<AddressListResponse>(response, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param addressUuid
+     * @param authorization
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws AddressNotFoundException
+     *
+     * Delete address of customer based on auth token and address UUID
+     *
+     */
+
     @RequestMapping(method = RequestMethod.DELETE, path = "/address/{address_id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<DeleteAddressResponse> deleteSavedAddress(@PathVariable("address_id") String addressUuid, @RequestHeader("authorization") final String authorization) throws AuthorizationFailedException, AddressNotFoundException {
         String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
@@ -101,7 +136,7 @@ public class AddressController {
         CustomerEntity customerEntity = customerService.getCustomerByAuthToken(authToken);
 
         AddressEntity addressEntity = addressService.getAddressByUUID(addressUuid, customerEntity);
-
+        //verify if address UUID is empty or not
         if (addressUuid.isEmpty()) {
             throw new AddressNotFoundException("ANF-005", "Address id can not be empty");
         }

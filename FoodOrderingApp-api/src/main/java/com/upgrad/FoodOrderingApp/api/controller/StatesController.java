@@ -20,10 +20,18 @@ public class StatesController {
     @Autowired
     private AddressService addressService;
 
+    /**
+     *
+     * @return
+     *
+     * Mapping for returning all the states from DB
+     *
+     */
     @RequestMapping(method = RequestMethod.GET, path = "/states", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<StatesListResponse> getAllStates() {
 
         List<StateEntity> states = addressService.getAllStates();
+        //Iterate and populate the response.
         List<StatesList> stateList = new ArrayList<>();
         for (StateEntity stateEntity : states) {
             StatesList stateTmp = new StatesList();
