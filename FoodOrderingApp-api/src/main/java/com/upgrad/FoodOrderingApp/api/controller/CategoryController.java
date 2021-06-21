@@ -23,6 +23,15 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
+
+    /**
+     *
+     * @param categoryId
+     * @return
+     * @throws CategoryNotFoundException
+     *
+     * to receive category by id in response
+     */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/category/{category_id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryDetailsResponse> getCategoryById(
@@ -49,6 +58,10 @@ public class CategoryController {
         return new ResponseEntity<CategoryDetailsResponse>(categoryDetailsResponse, HttpStatus.OK);
     }
 
+    /**
+     * to get all categories
+     * @return
+     */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, path = "/category", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoriesListResponse> getAllCategoriesOrderedByName() {

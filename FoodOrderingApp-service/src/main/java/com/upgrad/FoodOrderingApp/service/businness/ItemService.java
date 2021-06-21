@@ -31,6 +31,12 @@ public class ItemService {
     @Autowired
     private OrderDao orderDao;
 
+    /**
+     *
+     * @param restaurantUuid
+     * @param categoryUuid
+     * @return
+     */
     public List<ItemEntity> getItemsByCategoryAndRestaurant(String restaurantUuid, String categoryUuid) {
         RestaurantEntity restaurant = restaurantDao.getRestaurantByID(restaurantUuid);
         Set<ItemEntity> restaurantItems = restaurant.getItems();
@@ -43,6 +49,12 @@ public class ItemService {
         return filteredRestaurantItems;
     }
 
+    /**
+     *
+     * @param uuid
+     * @return
+     * @throws ItemNotFoundException
+     */
     public ItemEntity getItemById(String uuid) throws ItemNotFoundException {
         ItemEntity itemEntity = itemDao.getItemById(uuid);
         if (itemEntity == null) {
@@ -52,6 +64,11 @@ public class ItemService {
         }
     }
 
+    /**
+     *
+     * @param restaurantEntity
+     * @return
+     */
     public List<ItemEntity> getItemsByPopularity(RestaurantEntity restaurantEntity) {
 
         List<ItemEntity> itemEntityList = new ArrayList<>();

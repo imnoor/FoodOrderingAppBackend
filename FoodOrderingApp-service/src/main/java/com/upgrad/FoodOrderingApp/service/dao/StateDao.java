@@ -14,6 +14,11 @@ public class StateDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     *
+     * @param stateId
+     * @return
+     */
     public StateEntity getStateById(final Long stateId) {
         try {
             return entityManager.createNamedQuery("stateById", StateEntity.class).setParameter("id", stateId)
@@ -23,6 +28,11 @@ public class StateDao {
         }
     }
 
+    /**
+     *
+     * @param stateUuid
+     * @return
+     */
     public StateEntity getStateByUuid(String stateUuid) {
         try {
             return entityManager.createNamedQuery("stateByUuid", StateEntity.class).setParameter("uuid", stateUuid)
@@ -32,6 +42,10 @@ public class StateDao {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<StateEntity> getAllStates() {
         try {
             return entityManager.createNamedQuery("allStates", StateEntity.class)

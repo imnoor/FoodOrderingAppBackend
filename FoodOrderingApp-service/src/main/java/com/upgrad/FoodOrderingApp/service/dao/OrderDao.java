@@ -16,21 +16,40 @@ public class OrderDao {
     @PersistenceContext
     EntityManager entityManager;
 
+    /**
+     *
+     * @param customerId
+     * @return
+     */
     public List<OrderEntity> getOrdersForCustomer(final String customerId) {
         return entityManager.createNamedQuery("getOrdersByCustomer", OrderEntity.class).setParameter("customerId", customerId).getResultList();
     }
 
+    /**
+     *
+     * @param orderEntity
+     * @return
+     */
     public OrderEntity saveOrder(OrderEntity orderEntity) {
         entityManager.persist(orderEntity);
         return orderEntity;
     }
 
-
+    /**
+     *
+     * @param orderedItem
+     * @return
+     */
     public OrderItemEntity saveOrderItem(OrderItemEntity orderedItem) {
         entityManager.persist(orderedItem);
         return orderedItem;
     }
 
+    /**
+     *
+     * @param restaurant
+     * @return
+     */
     public List<OrderEntity> getOrdersByRestaurant(RestaurantEntity restaurant) {
         try {
             return entityManager.createNamedQuery("getOrdersByRestaurant", OrderEntity.class)

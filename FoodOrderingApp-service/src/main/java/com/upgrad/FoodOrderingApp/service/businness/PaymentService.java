@@ -18,11 +18,21 @@ public class PaymentService {
     @Autowired
     PaymentDao paymentDao;
 
+    /**
+     *
+     * @return
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public List<PaymentEntity> getAllPaymentMethods() {
         return paymentDao.getAllPaymentMethods();
     }
 
+    /**
+     *
+     * @param paymentID
+     * @return
+     * @throws PaymentMethodNotFoundException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public PaymentEntity getPaymentByUUID(String paymentID) throws PaymentMethodNotFoundException {
         PaymentEntity paymentEntity = paymentDao.getPaymentByUUID(paymentID);

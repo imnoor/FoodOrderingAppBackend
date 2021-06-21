@@ -25,6 +25,12 @@ public class OrderService {
     @Autowired
     OrderDao orderDao;
 
+    /**
+     *
+     * @param couponName
+     * @return
+     * @throws CouponNotFoundException
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public CouponEntity getCouponByCouponName(final String couponName) throws CouponNotFoundException {
         if ((couponName == null) || (couponName.isEmpty())) {
@@ -40,6 +46,12 @@ public class OrderService {
         }
     }
 
+    /**
+     *
+     * @param uuid
+     * @return
+     * @throws CouponNotFoundException
+     */
     public CouponEntity getCouponByCouponId(String uuid) throws CouponNotFoundException {
         CouponEntity couponEntity = couponDao.getCouponByCouponId(uuid);
         if (couponEntity != null) {
@@ -48,6 +60,11 @@ public class OrderService {
             throw new CouponNotFoundException("CPF-002", "No coupon by this id");
     }
 
+    /**
+     *
+     * @param orderEntity
+     * @return
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public OrderEntity saveOrder(OrderEntity orderEntity) {
         return orderDao.saveOrder(orderEntity);
@@ -57,6 +74,11 @@ public class OrderService {
         return orderDao.getOrdersForCustomer(customerId);
     }
 
+    /**
+     *
+     * @param orderedItem
+     * @return
+     */
     @Transactional(propagation = Propagation.REQUIRED)
     public OrderItemEntity saveOrderItem(OrderItemEntity orderedItem) {
         return orderDao.saveOrderItem(orderedItem);

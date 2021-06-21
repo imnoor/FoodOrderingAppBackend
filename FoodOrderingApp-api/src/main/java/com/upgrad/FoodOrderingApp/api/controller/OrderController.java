@@ -40,6 +40,14 @@ public class OrderController {
     @Autowired
     private ItemService itemService;
 
+    /**
+     *
+     * @param headerParam
+     * @return
+     * @throws AuthorizationFailedException
+     *
+     * to get all orders for a customer
+     */
     @CrossOrigin
     @RequestMapping(path = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CustomerOrderResponse> getOrders(@RequestHeader("authorization") final String headerParam) throws AuthorizationFailedException {
@@ -105,6 +113,19 @@ public class OrderController {
         }
     }
 
+
+    /**
+     * to create an order by a customer
+     * @param authorization
+     * @param saveOrderRequest
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws AddressNotFoundException
+     * @throws RestaurantNotFoundException
+     * @throws CouponNotFoundException
+     * @throws PaymentMethodNotFoundException
+     * @throws ItemNotFoundException
+     */
     @CrossOrigin
     @RequestMapping(method = RequestMethod.POST, path = "", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -158,6 +179,14 @@ public class OrderController {
         return new ResponseEntity<>(saveOrderResponse, HttpStatus.CREATED);
     }
 
+    /**
+     * to get a coupon by its name
+     * @param authorization
+     * @param couponName
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws CouponNotFoundException
+     */
     @CrossOrigin
     @RequestMapping(path = "/coupon/{coupon_name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CouponDetailsResponse> getCoupon(@RequestHeader("authorization") final String authorization, @PathVariable("coupon_name") final String couponName) throws AuthorizationFailedException, CouponNotFoundException {

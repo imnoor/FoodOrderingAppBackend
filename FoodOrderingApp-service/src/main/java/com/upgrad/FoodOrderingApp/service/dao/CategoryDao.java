@@ -15,6 +15,10 @@ public class CategoryDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     *
+     * @return
+     */
     public List<CategoryEntity> getAllCategories() {
         try {
             return entityManager.createNamedQuery("getAllCategories", CategoryEntity.class).getResultList();
@@ -23,6 +27,11 @@ public class CategoryDao {
         }
     }
 
+    /**
+     *
+     * @param categoryId
+     * @return
+     */
     public CategoryEntity getCategoryById(final String categoryId) {
         try {
             return entityManager.createNamedQuery("getCategoryItem", CategoryEntity.class)
@@ -33,6 +42,11 @@ public class CategoryDao {
         }
     }
 
+    /**
+     *
+     * @param restaurantEntity
+     * @return
+     */
     public List<CategoryEntity> getCategoriesByRestaurant(RestaurantEntity restaurantEntity) {
         try {
             return entityManager.createNamedQuery("getCategoryByRestaurant", CategoryEntity.class).setParameter("restaurant", restaurantEntity).getResultList();

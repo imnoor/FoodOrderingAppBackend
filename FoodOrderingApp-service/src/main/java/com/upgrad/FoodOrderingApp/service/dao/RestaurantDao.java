@@ -14,14 +14,28 @@ public class RestaurantDao {
     @PersistenceContext
     EntityManager entityManager;
 
+    /**
+     *
+     * @return
+     */
     public List<RestaurantEntity> restaurantsByRating() {
         return entityManager.createNamedQuery("getAllRestaurants").getResultList();
     }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
     public List<RestaurantEntity> restaurantsByName(String name) {
         return entityManager.createNamedQuery("getRestaurantsByName").setParameter("name", "%" + name.toLowerCase() + "%").getResultList();
     }
 
+    /**
+     *
+     * @param restaurantId
+     * @return
+     */
     public RestaurantEntity getRestaurantByID(String restaurantId) {
         try {
             return entityManager.createNamedQuery("getRestaurantById", RestaurantEntity.class).setParameter("id", restaurantId).getSingleResult();
@@ -30,6 +44,11 @@ public class RestaurantDao {
         }
     }
 
+    /**
+     *
+     * @param categoryEntity
+     * @return
+     */
     public List<RestaurantEntity> restaurantByCategory(CategoryEntity categoryEntity) {
         try {
             return entityManager.createNamedQuery("getRestaurantByCategory", RestaurantEntity.class).setParameter("category", categoryEntity).getResultList();
@@ -38,6 +57,11 @@ public class RestaurantDao {
         }
     }
 
+    /**
+     *
+     * @param restaurant
+     * @return
+     */
     public RestaurantEntity updateRestaurantRating(RestaurantEntity restaurant) {
         try {
             entityManager.merge(restaurant);
