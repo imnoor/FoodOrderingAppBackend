@@ -24,26 +24,48 @@ public class AddressService {
     @Autowired
     private StateDao stateDAO;
 
+
+    /**
+     *
+     * @param addressEntity
+     * @param customerEntity
+     * @return
+     * @throws SaveAddressException
+     *
+     * Save address of the customer.
+     *
+     */
     @Transactional
     public AddressEntity saveAddress(AddressEntity addressEntity, CustomerEntity customerEntity) throws SaveAddressException {
+
+        //validate for mandatory fields
         if (addressEntity.getCity().isEmpty() ||
                 addressEntity.getLocality().isEmpty() ||
                 addressEntity.getFlatBuilNo().isEmpty()
         ) {
             throw new SaveAddressException("SAR-001", "No field can be empty");
         }
+
+        //Pin code validation
         String regex = "^\\d{1,6}$";
         if (!addressEntity.getPincode().matches(regex)) {
             throw new SaveAddressException("SAR-002", "Invalid pincode");
         }
+        //link address to the customer
         addressEntity.setCustomer(customerEntity);
+        //save and return
         return addressDAO.saveAddress(addressEntity);
     }
 
-
-    public AddressEntity getAddressById(final Long addressId) {
-        return addressDAO.getAddressById(addressId);
-    }
+    /**
+     *
+     * @param stateUuid
+     * @return
+     * @throws AddressNotFoundException
+     *
+     * State lookup by UUID
+     *
+     */
 
     public StateEntity getStateByUUID(String stateUuid) throws AddressNotFoundException {
         StateEntity stateEntity = stateDAO.getStateByUuid(stateUuid);
@@ -53,6 +75,17 @@ public class AddressService {
         return stateEntity;
     }
 
+    /**
+     *
+     * @param uuid
+     * @param customerEntity
+     * @return
+     * @throws AddressNotFoundException
+     * @throws AuthorizationFailedException
+     *
+     * Get Address of customer by UUID
+     *
+     */
     public AddressEntity getAddressByUUID(String uuid, CustomerEntity customerEntity) throws AddressNotFoundException, AuthorizationFailedException {
         AddressEntity addressEntity = addressDAO.getAddressByUUID(uuid);
         if (addressEntity == null) {
@@ -66,16 +99,41 @@ public class AddressService {
         return addressEntity;
     }
 
+    /**
+     *
+     * @param addressEntity
+     * @return
+     *
+     * Delete address
+     *
+     */
+
     @Transactional
     public AddressEntity deleteAddress(AddressEntity addressEntity) {
         addressDAO.deleteAddress(addressEntity);
         return addressEntity;
     }
 
+    /**
+     *
+     * @param customerEntity
+     * @return
+     *
+     * Get all address of a Customer
+     *
+     */
     public List<AddressEntity> getAllAddress(CustomerEntity customerEntity) {
         Hibernate.initialize(customerEntity);
         return customerEntity.getSortedAddresses();
     }
+
+    /**
+     *
+     * @return
+     *
+     * Get all states.
+     *
+     */
 
     public List<StateEntity> getAllStates() {
 

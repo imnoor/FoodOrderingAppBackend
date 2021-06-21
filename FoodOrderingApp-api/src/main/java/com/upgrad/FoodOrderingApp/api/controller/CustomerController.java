@@ -26,6 +26,15 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
+    /**
+     *
+     * @param signupUserRequest
+     * @return
+     * @throws SignUpRestrictedException
+     *
+     * Customer sign up controller mapping
+     *
+     */
     @RequestMapping(method = RequestMethod.POST, path = "/customer/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<SignupCustomerResponse> signup(@RequestBody final SignupCustomerRequest signupUserRequest) throws SignUpRestrictedException {
 
@@ -42,6 +51,7 @@ public class CustomerController {
         customerEntity.setLastName(signupUserRequest.getLastName());
         customerEntity.setEmail(signupUserRequest.getEmailAddress());
         customerEntity.setPassword(signupUserRequest.getPassword());
+        //set a default salt value.
         customerEntity.setSalt("1234abc");
         customerEntity.setContactNumber(signupUserRequest.getContactNumber());
         final CustomerEntity createdUserEntity = customerService.saveCustomer(customerEntity);
@@ -49,10 +59,20 @@ public class CustomerController {
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 
+    /**
+     *
+     * @param authorization
+     * @return
+     * @throws AuthenticationFailedException
+     *
+     * Login mapping for customer controller, log in using Basic Auth headers.
+     *
+     */
 
-    @RequestMapping(method = RequestMethod.POST, path = "/customer/login", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(method = RequestMethod.POST, path = "/customer/login", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LoginResponse> login(@RequestHeader("authorization") final String authorization) throws AuthenticationFailedException {
 
+        //Extract auth token
         String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BASIC);
         String encoded = "";
         if (authEncoded.length > 1) {
@@ -62,6 +82,7 @@ public class CustomerController {
         }
         byte[] decode;
         try {
+            //extract username/password from the Base64 encoded token
             decode = Base64.getDecoder().decode(encoded);
         } catch (IllegalArgumentException ex) {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
@@ -79,6 +100,7 @@ public class CustomerController {
         } else {
             throw new AuthenticationFailedException("ATH-003", "Incorrect format of decoded customer name and password");
         }
+        //Authenticate and set auth data in DB
         CustomerAuthEntity customerAuthEntity = customerService.authenticate(contact, passowrd);
         CustomerEntity user = customerAuthEntity.getCustomer();
 
@@ -89,8 +111,21 @@ public class CustomerController {
         return new ResponseEntity<LoginResponse>(authorizedUserResponse, headers, HttpStatus.OK);
     }
 
+    /**
+     *
+     * @param authorization
+     * @return
+     * @throws AuthorizationFailedException
+     *
+     * Logout mapping for user controller, based on Bearer token
+     *
+     */
+
+
     @RequestMapping(method = RequestMethod.POST, path = "/customer/logout", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<LogoutResponse> logout(@RequestHeader("authorization") final String authorization) throws AuthorizationFailedException {
+
+        //Extract token and get auth entity from DB
         String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
         if (authEncoded.length > 1) {
@@ -98,6 +133,7 @@ public class CustomerController {
         } else {
             authToken = "nonexistant";
         }
+        //logout and update DB
         CustomerAuthEntity customerAuthEntity = customerService.logout(authToken);
         if (customerAuthEntity == null) {
             throw new AuthorizationFailedException("ATHR-001", "This shouldnt get thrown");
@@ -108,11 +144,21 @@ public class CustomerController {
         return new ResponseEntity<>(signoutResponse, HttpStatus.OK);
     }
 
-
+    /**
+     *
+     * @param authorization
+     * @param updateCustomerRequest
+     * @return
+     * @throws UpdateCustomerException
+     * @throws AuthorizationFailedException
+     *
+     * Update customer mapping for controller using PUT request
+     *
+     */
     @RequestMapping(method = RequestMethod.PUT, path = "/customer", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdateCustomerResponse> updateCustomer(@RequestHeader("authorization") final String authorization, @RequestBody final UpdateCustomerRequest updateCustomerRequest) throws UpdateCustomerException, AuthorizationFailedException {
 
-        //Lets do some validations one day
+        //Get the auth token
 
         String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
@@ -122,6 +168,7 @@ public class CustomerController {
             authToken = "nonexistant";
         }
 
+        //necessary validation
         if (updateCustomerRequest.getFirstName().isEmpty()) {
             throw new UpdateCustomerException("UCR-002", "First name field should not be empty");
         }
@@ -133,14 +180,25 @@ public class CustomerController {
         return new ResponseEntity<>(userResponse, HttpStatus.OK);
     }
 
-
+    /**
+     *
+     * @param authorization
+     * @param updatePasswordRequest
+     * @return
+     * @throws AuthorizationFailedException
+     * @throws UpdateCustomerException
+     *
+     * Update password mapping for user controller
+     *
+     */
     @RequestMapping(method = RequestMethod.PUT, path = "/customer/password", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<UpdatePasswordResponse> updatePassword(@RequestHeader("authorization") final String authorization, @RequestBody final UpdatePasswordRequest updatePasswordRequest) throws AuthorizationFailedException, UpdateCustomerException {
 
-        //Lets do some validations or may be not
+        //Lets do some validations
         if (updatePasswordRequest.getNewPassword().isEmpty() || updatePasswordRequest.getOldPassword().isEmpty()) {
             throw new UpdateCustomerException("UCR-003", "No field should be empty");
         }
+        //Get auth token and hence the associated user.
         String[] authEncoded = authorization.split(FoodOrderingConstants.PREFIX_BEARER);
         String authToken = "";
         if (authEncoded.length > 1) {
